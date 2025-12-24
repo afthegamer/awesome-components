@@ -1,0 +1,14 @@
+build
+coverage
+node_modules
+.angular
+.vscode
+ci
+angular.json
+i18n
+build
+deploy
+*.yaml
+*.yml
+*.md
+.idea
