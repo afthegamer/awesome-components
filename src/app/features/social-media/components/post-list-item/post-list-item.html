@@ -1,1 +1,16 @@
-<p>{{ post().title | titlecase }}</p>
+<mat-card class="post-card">
+  <mat-card-header>
+    <mat-card-title>
+      <span>{{ post().title | titlecase }}</span>
+    </mat-card-title>
+    <mat-card-subtitle>{{ post().createdDate | date }}</mat-card-subtitle>
+  </mat-card-header>
+
+  @if (post().imageUrl; as imageUrl) {
+    <img [alt]="post().title" [src]="imageUrl" mat-card-image />
+  }
+
+  <mat-card-content>
+    <span class="post-content">{{ post().content }}</span>
+  </mat-card-content>
+</mat-card>

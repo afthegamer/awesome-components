@@ -1,0 +1,12 @@
+.post-card {
+  margin: 20px auto;
+  max-width: 720px;
+  width: calc(100% - 32px);
+
+  // Styles génériques pour les images “normales”, pas l’image principale Material
+  img:not([mat-card-image]):not([matCardImage]) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
