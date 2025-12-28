@@ -3,12 +3,14 @@ import { Post } from '../../models/post.model';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import {
   MatCard,
+  MatCardActions,
   MatCardContent,
   MatCardHeader,
   MatCardImage,
   MatCardSubtitle,
   MatCardTitle,
 } from '@angular/material/card';
+import { Comments } from '../../../../shared/components/comments/comments';
 
 @Component({
   selector: 'app-post-list-item',
@@ -21,6 +23,8 @@ import {
     MatCardSubtitle,
     DatePipe,
     MatCardImage,
+    MatCardActions,
+    Comments,
   ],
   templateUrl: './post-list-item.html',
   styleUrl: './post-list-item.scss',

@@ -1,11 +1,40 @@
-import { Component } from '@angular/core';
+import { Component, inject, input, OnInit } from '@angular/core';
+import { MatList, MatListItem, MatListSubheaderCssMatStyler } from '@angular/material/list';
+import { MatLine } from '@angular/material/core';
+import { DatePipe } from '@angular/common';
+import { CommentModel } from '../../../core/models/comment.model';
+import { MatFormField, MatInput } from '@angular/material/input';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-comments',
-  imports: [],
+  imports: [
+    MatList,
+    MatListItem,
+    MatListSubheaderCssMatStyler,
+    MatLine,
+    DatePipe,
+    MatFormField,
+    MatInput,
+    MatIconButton,
+    MatIcon,
+    ReactiveFormsModule,
+  ],
   templateUrl: './comments.html',
   styleUrl: './comments.scss',
 })
-export class Comments {
+export class Comments implements OnInit {
+  comments = input.required<CommentModel[]>();
+  commentCtrl!: FormControl;
+  private readonly formBuilder = inject<FormBuilder>(FormBuilder);
+  ngOnInit(): void {
+    this.commentCtrl = this.formBuilder.control('', [
+      Validators.required,
+      Validators.minLength(10),
+    ]);
+  }
 
+  protected onLeaveComment() {}
 }
