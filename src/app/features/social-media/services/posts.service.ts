@@ -11,4 +11,11 @@ export class PostsService {
   getPosts(): Observable<Post[]> {
     return this.http.get<Post[]>(`${environment.apiUrl}/posts`);
   }
+
+  addNewComment(postCommented: { comment: string; postId: number }) {
+    console.log('addNewComment', postCommented);
+    // this.http
+    //   .post(`${environment.apiUrl}/posts/${postCommented.postId}/comments`, postCommented)
+    //   .subscribe();
+  }
 }

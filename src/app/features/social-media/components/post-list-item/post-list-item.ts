@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { Post } from '../../models/post.model';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import {
@@ -8,7 +8,7 @@ import {
   MatCardHeader,
   MatCardImage,
   MatCardSubtitle,
-  MatCardTitle,
+  MatCardTitle
 } from '@angular/material/card';
 import { Comments } from '../../../../shared/components/comments/comments';
 
@@ -31,4 +31,9 @@ import { Comments } from '../../../../shared/components/comments/comments';
 })
 export class PostListItem {
   post = input.required<Post>();
+  postCommented = output<{ comment: string; postId: number }>();
+
+  protected onNewComment($event: string) {
+    this.postCommented.emit({ comment: $event, postId: this.post().id });
+  }
 }

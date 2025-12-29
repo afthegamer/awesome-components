@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit } from '@angular/core';
+import { Component, inject, input, OnInit, output } from '@angular/core';
 import { MatList, MatListItem, MatListSubheaderCssMatStyler } from '@angular/material/list';
 import { MatLine } from '@angular/material/core';
 import { DatePipe } from '@angular/common';
@@ -27,6 +27,7 @@ import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angu
 })
 export class Comments implements OnInit {
   comments = input.required<CommentModel[]>();
+  newComment = output<string>();
   commentCtrl!: FormControl;
   private readonly formBuilder = inject<FormBuilder>(FormBuilder);
   ngOnInit(): void {
@@ -36,5 +37,12 @@ export class Comments implements OnInit {
     ]);
   }
 
-  protected onLeaveComment() {}
+  protected onLeaveComment() {
+    if (this.commentCtrl.valid) {
+      this.newComment.emit(this.commentCtrl.value);
+      this.commentCtrl.reset();
+    } else {
+      this.commentCtrl.markAsTouched();
+    }
+  }
 }
