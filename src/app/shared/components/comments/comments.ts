@@ -1,13 +1,13 @@
 import { Component, inject, input, OnInit, output } from '@angular/core';
 import { MatList, MatListItem, MatListSubheaderCssMatStyler } from '@angular/material/list';
 import { MatLine } from '@angular/material/core';
-import { DatePipe } from '@angular/common';
 import { CommentModel } from '../../../core/models/comment.model';
 import { MatFormField, MatInput } from '@angular/material/input';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ShortenPipe } from '../../pipes/shorten.pipe';
+import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
 
 @Component({
   selector: 'app-comments',
@@ -16,13 +16,13 @@ import { ShortenPipe } from '../../pipes/shorten.pipe';
     MatListItem,
     MatListSubheaderCssMatStyler,
     MatLine,
-    DatePipe,
     MatFormField,
     MatInput,
     MatIconButton,
     MatIcon,
     ReactiveFormsModule,
     ShortenPipe,
+    TimeAgoPipe,
   ],
   templateUrl: './comments.html',
   styleUrl: './comments.scss',

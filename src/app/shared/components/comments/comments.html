@@ -11,7 +11,7 @@
     <h2 matSubheader>Commentairez sur ce post</h2>
     @for (comment of comments(); track comment) {
       <mat-list-item>
-        <span mat-line>{{ comment.createdDate | date }}</span>
+        <span mat-line>{{ comment.createdDate | timeAgo }}</span>
         -
         <span mat-line>{{ comment.comment | shorten }}</span>
       </mat-list-item>

@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { Post } from '../../models/post.model';
-import { DatePipe, TitleCasePipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import {
   MatCard,
   MatCardActions,
@@ -13,6 +13,7 @@ import {
 import { Comments } from '../../../../shared/components/comments/comments';
 import { ShortenPipe } from '../../../../shared/pipes/shorten.pipe';
 import { UsernamePipe } from '../../../../shared/pipes/username.pipe';
+import { TimeAgoPipe } from '../../../../shared/pipes/time-ago.pipe';
 
 @Component({
   selector: 'app-post-list-item',
@@ -23,12 +24,12 @@ import { UsernamePipe } from '../../../../shared/pipes/username.pipe';
     MatCardContent,
     MatCardTitle,
     MatCardSubtitle,
-    DatePipe,
     MatCardImage,
     MatCardActions,
     Comments,
     ShortenPipe,
     UsernamePipe,
+    TimeAgoPipe,
   ],
   templateUrl: './post-list-item.html',
   styleUrl: './post-list-item.scss',
