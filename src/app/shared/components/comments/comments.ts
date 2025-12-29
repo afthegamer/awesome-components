@@ -7,6 +7,7 @@ import { MatFormField, MatInput } from '@angular/material/input';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ShortenPipe } from '../../pipes/shorten.pipe';
 
 @Component({
   selector: 'app-comments',
@@ -21,6 +22,7 @@ import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angu
     MatIconButton,
     MatIcon,
     ReactiveFormsModule,
+    ShortenPipe,
   ],
   templateUrl: './comments.html',
   styleUrl: './comments.scss',
