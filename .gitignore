@@ -19,7 +19,7 @@ yarn-error.log
 *.launch
 .settings/
 *.sublime-workspace
-/angular-advanced-backend/*
+/angular-advanced-backend/node_modules
 
 # Visual Studio Code
 .vscode/*
