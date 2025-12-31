@@ -1,12 +1,13 @@
-import { Component, computed, DestroyRef, effect, inject, Injector, Signal, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
   FormGroup,
   NonNullableFormBuilder,
   ReactiveFormsModule,
-  Validators
+  Validators,
 } from '@angular/forms';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,11 +15,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize, startWith } from 'rxjs';
 
-import { ComplexFormValue } from '../../models/complex-form-value.model';
 import { ComplexFormService } from '../../services/complex-form.service';
+import { ComplexFormValue } from '../../models/complex-form-value.model';
+import { confirmEqualValidator } from '../../validators/confirm-equal.validator';
+import { validValidator } from '../../validators/valid.validator';
 
 type ContactPreference = 'email' | 'phone';
 
@@ -37,12 +40,21 @@ type ContactPreference = 'email' | 'phone';
   templateUrl: './complex-form.html',
   styleUrl: './complex-form.scss',
 })
-export class ComplexForm {
-  // --- UI state
+export class ComplexForm implements OnInit {
+  // UI state
   readonly isSaving = signal(false);
   readonly saveError = signal<string | null>(null);
 
-  // --- Forms
+  // Affichage (signals)
+  readonly contactPreference = signal<ContactPreference>('email');
+  readonly showEmail = computed(() => this.contactPreference() === 'email');
+  readonly showPhone = computed(() => this.contactPreference() === 'phone');
+
+  // Erreurs “FormGroup-level”
+  readonly showEmailError = signal(false);
+  readonly showPasswordError = signal(false);
+
+  // Forms
   mainForm!: FormGroup;
 
   personalInfoForm!: FormGroup;
@@ -58,21 +70,21 @@ export class ComplexForm {
   confirmPasswordCtrl!: FormControl<string>;
   loginInfoForm!: FormGroup;
 
-  // --- Préférence de contact sous forme de Signal
-  // (initialisée après la création de contactPreferenceCtrl)
-  contactPreference!: Signal<ContactPreference>;
-  readonly showEmail = computed(() => this.contactPreference() === 'email');
-  readonly showPhone = computed(() => this.contactPreference() === 'phone');
-
   private readonly fb = inject(NonNullableFormBuilder);
-  private readonly service = inject(ComplexFormService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly injector = inject(Injector);
+  private readonly service = inject(ComplexFormService);
 
-  constructor() {
+  /**
+   * Optionnel : active uniquement si tu veux tester validValidator() sur le champ email.
+   * Laisse false en temps normal.
+   */
+  private readonly enableValidDemo = false;
+
+  ngOnInit(): void {
     this.initFormControls();
     this.initMainForm();
-    this.initReactiveBehavior();
+    this.initReactiveBehavior(); // show/hide + validators dynamiques
+    this.initGroupErrorSignals(); // messages d'erreur confirmEqual
   }
 
   onSubmitForm(): void {
@@ -104,47 +116,48 @@ export class ComplexForm {
   getFormControlErrorText(ctrl: AbstractControl): string {
     if (ctrl.hasError('required')) return 'Ce champ est requis';
     if (ctrl.hasError('email')) return "Merci d'entrer une adresse mail valide";
-    if (ctrl.hasError('minlength')) {
+    if (ctrl.hasError('minlength'))
       return 'Ce numéro de téléphone ne contient pas assez de chiffres';
-    }
-    if (ctrl.hasError('maxlength')) {
-      return 'Ce numéro de téléphone contient trop de chiffres';
-    }
+    if (ctrl.hasError('maxlength')) return 'Ce numéro de téléphone contient trop de chiffres';
+    // if (ctrl.hasError('validValidator')) return 'Ce texte ne contient pas le mot VALID';
     return 'Ce champ contient une erreur';
   }
 
   private initFormControls(): void {
-    // personalInfo
     this.personalInfoForm = this.fb.group({
       firstName: this.fb.control('', Validators.required),
       lastName: this.fb.control('', Validators.required),
     });
 
-    // contact preference + phone
-    this.contactPreferenceCtrl = this.fb.control('email');
+    this.contactPreferenceCtrl = this.fb.control<ContactPreference>('email');
     this.phoneCtrl = this.fb.control('');
 
-    // email
     this.emailCtrl = this.fb.control('');
     this.confirmEmailCtrl = this.fb.control('');
-    this.emailForm = this.fb.group({
-      email: this.emailCtrl,
-      confirm: this.confirmEmailCtrl,
-    });
 
-    // login
+    this.emailForm = this.fb.group(
+      {
+        email: this.emailCtrl,
+        confirm: this.confirmEmailCtrl,
+      },
+      {
+        validators: [confirmEqualValidator('email', 'confirm')],
+        updateOn: 'blur',
+      },
+    );
+
     this.passwordCtrl = this.fb.control('', Validators.required);
     this.confirmPasswordCtrl = this.fb.control('', Validators.required);
-    this.loginInfoForm = this.fb.group({
-      username: this.fb.control('', Validators.required),
-      password: this.passwordCtrl,
-      confirmPassword: this.confirmPasswordCtrl,
-    });
 
-    // Signal à partir de valueChanges (avec émission initiale)
-    this.contactPreference = toSignal(
-      this.contactPreferenceCtrl.valueChanges.pipe(startWith(this.contactPreferenceCtrl.value)),
-      { initialValue: this.contactPreferenceCtrl.value },
+    this.loginInfoForm = this.fb.group(
+      {
+        username: this.fb.control('', Validators.required),
+        password: this.passwordCtrl,
+        confirmPassword: this.confirmPasswordCtrl,
+      },
+      {
+        validators: [confirmEqualValidator('password', 'confirmPassword')],
+      },
     );
   }
 
@@ -159,41 +172,63 @@ export class ComplexForm {
   }
 
   private initReactiveBehavior(): void {
-    // Un seul endroit : affichage + validators dynamiques
-    effect(
-      () => {
-        this.setEmailValidators(this.showEmail());
-        this.setPhoneValidators(this.showPhone());
-      },
-      { injector: this.injector },
-    );
+    this.contactPreferenceCtrl.valueChanges
+      .pipe(startWith(this.contactPreferenceCtrl.value), takeUntilDestroyed(this.destroyRef))
+      .subscribe((pref) => {
+        this.contactPreference.set(pref);
+
+        this.setEmailValidators(pref === 'email');
+        this.setPhoneValidators(pref === 'phone');
+      });
+  }
+
+  private initGroupErrorSignals(): void {
+    this.emailForm.statusChanges
+      .pipe(startWith(this.emailForm.status), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.showEmailError.set(
+          this.emailForm.hasError('confirmEqual') &&
+            !!this.emailCtrl.value &&
+            !!this.confirmEmailCtrl.value,
+        );
+      });
+
+    this.loginInfoForm.statusChanges
+      .pipe(startWith(this.loginInfoForm.status), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.showPasswordError.set(
+          this.loginInfoForm.hasError('confirmEqual') &&
+            !!this.passwordCtrl.value &&
+            !!this.confirmPasswordCtrl.value,
+        );
+      });
   }
 
   private setEmailValidators(enabled: boolean): void {
     if (enabled) {
-      this.emailCtrl.addValidators([Validators.required, Validators.email]);
-      this.confirmEmailCtrl.addValidators([Validators.required, Validators.email]);
+      const base = [Validators.required, Validators.email];
+      this.emailCtrl.setValidators(this.enableValidDemo ? [...base, validValidator()] : base);
+      this.confirmEmailCtrl.setValidators([Validators.required, Validators.email]);
     } else {
       this.emailCtrl.clearValidators();
       this.confirmEmailCtrl.clearValidators();
-      // souvent plus propre quand on cache :
       this.emailForm.reset({ email: '', confirm: '' });
     }
 
     this.emailCtrl.updateValueAndValidity();
     this.confirmEmailCtrl.updateValueAndValidity();
+    this.emailForm.updateValueAndValidity();
   }
 
   private setPhoneValidators(enabled: boolean): void {
     if (enabled) {
-      this.phoneCtrl.addValidators([
+      this.phoneCtrl.setValidators([
         Validators.required,
         Validators.minLength(10),
         Validators.maxLength(10),
       ]);
     } else {
       this.phoneCtrl.clearValidators();
-      // souvent plus propre quand on cache :
       this.phoneCtrl.reset('');
     }
 
@@ -208,5 +243,9 @@ export class ComplexForm {
       phone: '',
       loginInfo: { username: '', password: '', confirmPassword: '' },
     });
+
+    // remet l'état initial + déclenche l'affichage/validators
+    this.contactPreferenceCtrl.setValue('email', { emitEvent: true });
+    this.saveError.set(null);
   }
 }

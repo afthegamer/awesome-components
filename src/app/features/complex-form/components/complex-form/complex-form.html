@@ -1,4 +1,4 @@
-<form class="main-form" [formGroup]="mainForm" (ngSubmit)="onSubmitForm()">
+<form (ngSubmit)="onSubmitForm()" [formGroup]="mainForm" class="main-form">
   <mat-card>
     <mat-card-title>Inscription</mat-card-title>
 
@@ -8,13 +8,13 @@
       <div class="form-row">
         <mat-form-field appearance="fill">
           <mat-label>Prénom</mat-label>
-          <input type="text" matInput formControlName="firstName" />
+          <input formControlName="firstName" matInput type="text" />
           <mat-error>Ce champ est requis</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="fill">
           <mat-label>Nom</mat-label>
-          <input type="text" matInput formControlName="lastName" />
+          <input formControlName="lastName" matInput type="text" />
           <mat-error>Ce champ est requis</mat-error>
         </mat-form-field>
       </div>
@@ -30,22 +30,26 @@
     </mat-card>
 
     @if (showEmail()) {
-      <mat-card class="form-card" [formGroup]="emailForm">
+      <mat-card [formGroup]="emailForm" class="form-card">
         <mat-card-subtitle>Email</mat-card-subtitle>
 
         <div class="form-row">
           <mat-form-field appearance="fill">
             <mat-label>Adresse mail</mat-label>
-            <input type="text" matInput formControlName="email" />
+            <input formControlName="email" matInput type="text" />
             <mat-error>{{ getFormControlErrorText(emailCtrl) }}</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="fill">
             <mat-label>Confirmer votre adresse mail</mat-label>
-            <input type="text" matInput formControlName="confirm" />
+            <input formControlName="confirm" matInput type="text" />
             <mat-error>{{ getFormControlErrorText(confirmEmailCtrl) }}</mat-error>
           </mat-form-field>
         </div>
+
+        @if (showEmailError()) {
+          <small class="error-text">Les deux adresses ne correspondent pas</small>
+        }
       </mat-card>
     }
 
@@ -55,31 +59,31 @@
 
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Numéro de téléphone</mat-label>
-          <input type="text" matInput [formControl]="phoneCtrl" />
+          <input [formControl]="phoneCtrl" matInput type="text" />
           <mat-error>{{ getFormControlErrorText(phoneCtrl) }}</mat-error>
         </mat-form-field>
       </mat-card>
     }
 
-    <mat-card class="form-card" [formGroup]="loginInfoForm">
+    <mat-card [formGroup]="loginInfoForm" class="form-card">
       <mat-card-subtitle>Informations de connexion</mat-card-subtitle>
 
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Nom d'utilisateur</mat-label>
-        <input type="text" matInput formControlName="username" />
+        <input formControlName="username" matInput type="text" />
         <mat-error>Ce champ est requis</mat-error>
       </mat-form-field>
 
       <div class="form-row">
         <mat-form-field appearance="fill">
           <mat-label>Mot de passe</mat-label>
-          <input type="password" matInput formControlName="password" />
+          <input formControlName="password" matInput type="password" />
           <mat-error>Ce champ est requis</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="fill">
           <mat-label>Confirmer votre mot de passe</mat-label>
-          <input type="password" matInput formControlName="confirmPassword" />
+          <input formControlName="confirmPassword" matInput type="password" />
           <mat-error>Ce champ est requis</mat-error>
         </mat-form-field>
       </div>
@@ -87,7 +91,7 @@
 
     @if (mainForm.valid) {
       <mat-card-actions>
-        <button mat-flat-button color="primary" type="submit" [disabled]="isSaving()">
+        <button [disabled]="isSaving()" color="primary" mat-flat-button type="submit">
           ENREGISTRER
         </button>
       </mat-card-actions>
@@ -101,6 +105,10 @@
       <div class="loading">
         <mat-spinner color="primary" mode="indeterminate"></mat-spinner>
       </div>
+    }
+
+    @if (showPasswordError()) {
+      <small class="error-text">Les mots de passe ne correspondent pas</small>
     }
   </mat-card>
 </form>
