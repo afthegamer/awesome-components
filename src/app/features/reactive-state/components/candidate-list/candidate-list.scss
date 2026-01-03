@@ -1,0 +1,9 @@
+.form {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.form mat-form-field {
+  width: 220px;
+}

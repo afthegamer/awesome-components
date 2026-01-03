@@ -1,6 +1,21 @@
 <mat-card>
   <mat-card-title-group>
     <mat-card-title>Candidats</mat-card-title>
+
+    <div class="form">
+      <mat-form-field appearance="fill">
+        <input [formControl]="searchCtrl" matInput type="text" />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-select [formControl]="searchTypeCtrl">
+          @for (option of searchTypeOptions; track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
   </mat-card-title-group>
 
   @if (loading$ | async) {
@@ -10,20 +25,10 @@
   @if (candidates$ | async; as candidates) {
     <mat-nav-list>
       @for (candidate of candidates; track candidate.id) {
-        <a [routerLink]="candidate.id.toString()" mat-list-item>
-          <img
-            [alt]="candidate.lastName"
-            [src]="candidate.imageUrl"
-            matListItemAvatar
-          />
-
-          <span matListItemTitle>
-        {{ candidate.firstName }} {{ candidate.lastName }}
-      </span>
-
-          <span matListItemLine>
-        {{ candidate.job }} chez {{ candidate.company }}
-      </span>
+        <a [routerLink]="candidate.id.toString()" lines="2" mat-list-item>
+          <img [alt]="candidate.lastName" [src]="candidate.imageUrl" matListItemAvatar />
+          <span matListItemTitle>{{ candidate.firstName }} {{ candidate.lastName }}</span>
+          <span matListItemLine>{{ candidate.job }} chez {{ candidate.company }}</span>
         </a>
       }
     </mat-nav-list>

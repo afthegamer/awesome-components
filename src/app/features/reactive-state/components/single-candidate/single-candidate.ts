@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, Observable, switchMap } from 'rxjs';
+import { map, Observable, switchMap, take, tap } from 'rxjs';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -35,8 +35,29 @@ export class SingleCandidate implements OnInit {
     );
   }
 
-  onHire(): void {}
-  onRefuse(): void {}
+  onRefuse(): void {
+    this.candidate$
+      .pipe(
+        take(1),
+        tap((candidate) => {
+          this.candidatesService.refuseCandidate(candidate!.id);
+          this.onGoBack();
+        }),
+      )
+      .subscribe();
+  }
+
+  onHire(): void {
+    this.candidate$
+      .pipe(
+        take(1),
+        tap((candidate) => {
+          this.candidatesService.hireCandidate(candidate!.id);
+          this.onGoBack();
+        }),
+      )
+      .subscribe();
+  }
 
   onGoBack(): void {
     this.router.navigate(['../'], { relativeTo: this.route });
