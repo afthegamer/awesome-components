@@ -12,3 +12,29 @@ mat-form-field {
 mat-list-item {
   border-bottom: thin solid #555;
 }
+.comment-item {
+  transition:
+    transform 100ms ease-in-out,
+    background-color 100ms ease-in-out;
+}
+
+.comment-item:hover {
+  transform: scale(1.05);
+  background-color: rgb(201, 157, 242);
+}
+
+/* animation d’entrée (quand l’élément arrive dans le DOM) */
+.comment-enter {
+  animation: comment-enter 100ms ease-in-out;
+}
+
+@keyframes comment-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

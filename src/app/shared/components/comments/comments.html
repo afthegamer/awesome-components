@@ -10,7 +10,7 @@
   <mat-list>
     <h2 matSubheader>Commentairez sur ce post</h2>
     @for (comment of comments(); track comment) {
-      <mat-list-item>
+      <mat-list-item animate.enter="comment-enter" class="comment-item">
         <span mat-line>{{ comment.createdDate | timeAgo }}</span>
         -
         <span mat-line>{{ comment.comment | shorten }}</span>
