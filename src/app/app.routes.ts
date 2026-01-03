@@ -12,5 +12,12 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/complex-form/complex-form.routes').then((m) => m.COMPLEX_FORM_ROUTES),
   },
+  {
+    path: 'reactive-state',
+    loadChildren: () =>
+      import('./features/reactive-state/reactive-state.routes').then(
+        (m) => m.REACTIVE_STATE_ROUTES,
+      ),
+  },
   { path: '**', redirectTo: 'social-media' },
 ];
