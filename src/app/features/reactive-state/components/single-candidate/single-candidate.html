@@ -1,0 +1,36 @@
+<mat-card>
+  @if (candidate$ | async; as candidate) {
+    @if (candidate) {
+      <mat-card-header>
+        <img
+          [alt]="candidate.firstName + ' ' + candidate.lastName"
+          [src]="candidate.imageUrl"
+          mat-card-avatar
+        />
+
+        <mat-card-title> {{ candidate.firstName }} {{ candidate.lastName }} </mat-card-title>
+
+        <mat-card-subtitle>
+          {{ candidate.job }}, {{ candidate.department }} chez {{ candidate.company }}
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <p>Contact : {{ candidate.email }}</p>
+      </mat-card-content>
+    }
+  }
+
+  <mat-card-actions>
+    @if (loading$ | async) {
+      <mat-spinner></mat-spinner>
+    } @else {
+      <div class="action-buttons">
+        <button (click)="onHire()" color="accent" mat-flat-button type="button">EMBAUCHER</button>
+        <button (click)="onRefuse()" color="warn" mat-flat-button type="button">REFUSER</button>
+      </div>
+
+      <button (click)="onGoBack()" color="primary" mat-flat-button type="button">RETOUR</button>
+    }
+  </mat-card-actions>
+</mat-card>

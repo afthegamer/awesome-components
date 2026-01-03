@@ -1,0 +1,31 @@
+<mat-card>
+  <mat-card-title-group>
+    <mat-card-title>Candidats</mat-card-title>
+  </mat-card-title-group>
+
+  @if (loading$ | async) {
+    <mat-spinner></mat-spinner>
+  }
+
+  @if (candidates$ | async; as candidates) {
+    <mat-nav-list>
+      @for (candidate of candidates; track candidate.id) {
+        <a [routerLink]="candidate.id.toString()" mat-list-item>
+          <img
+            [alt]="candidate.lastName"
+            [src]="candidate.imageUrl"
+            matListItemAvatar
+          />
+
+          <span matListItemTitle>
+        {{ candidate.firstName }} {{ candidate.lastName }}
+      </span>
+
+          <span matListItemLine>
+        {{ candidate.job }} chez {{ candidate.company }}
+      </span>
+        </a>
+      }
+    </mat-nav-list>
+  }
+</mat-card>

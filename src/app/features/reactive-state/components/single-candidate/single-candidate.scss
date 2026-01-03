@@ -1,0 +1,26 @@
+mat-card {
+  max-width: 1000px;
+  margin: 16px auto;
+}
+
+mat-card-header {
+  align-items: center;
+}
+
+mat-card-content {
+  padding-top: 8px;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}

@@ -1,20 +1,44 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { map, Observable, switchMap } from 'rxjs';
+
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { CandidatesService } from '../../services/candidates.service';
+import { Candidate } from '../../models/candidate.model';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-single-candidate',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [MatCardModule, MatButtonModule, MatProgressSpinnerModule, AsyncPipe],
   templateUrl: './single-candidate.html',
   styleUrl: './single-candidate.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SingleCandidate {
-  private readonly route = inject(ActivatedRoute);
-  private readonly candidatesService = inject(CandidatesService);
+export class SingleCandidate implements OnInit {
+  loading$!: Observable<boolean>;
+  candidate$!: Observable<Candidate | undefined>;
 
-  // Le chapitre suivant utilisera l'id + service pour sélectionner un candidat
+  private readonly candidatesService = inject(CandidatesService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
+  ngOnInit(): void {
+    this.loading$ = this.candidatesService.loading$;
+
+    this.candidate$ = this.route.paramMap.pipe(
+      map((pm) => Number(pm.get('id'))),
+      switchMap((id) => this.candidatesService.getCandidateById(id)),
+    );
+  }
+
+  onHire(): void {}
+  onRefuse(): void {}
+
+  onGoBack(): void {
+    this.router.navigate(['../'], { relativeTo: this.route });
+  }
 }
