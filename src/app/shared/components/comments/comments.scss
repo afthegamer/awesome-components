@@ -24,17 +24,57 @@ mat-list-item {
 }
 
 /* animation d’entrée (quand l’élément arrive dans le DOM) */
+/* Durées/paramètres (faciles à ajuster) */
 .comment-enter {
-  animation: comment-enter 100ms ease-in-out;
+  --stagger-step: 50ms; /* décalage entre items */
+  --enter-duration: 250ms; /* slide du bloc */
+  --text-duration: 250ms; /* fade texte */
+  --date-duration: 500ms; /* fade date */
+  --enter-bg: rgb(201, 157, 242); /* couleur au départ */
+  --delay: calc(var(--i, 0) * var(--stagger-step));
+
+  /* arrivée du bloc */
+  animation: comment-enter var(--enter-duration) ease-out var(--delay) both;
+}
+
+/* fade-in des enfants APRES l'arrivée du bloc */
+.comment-enter .comment-text {
+  animation: comment-text-fade var(--text-duration) ease-out
+    calc(var(--delay) + var(--enter-duration)) both;
+}
+
+.comment-enter .comment-date {
+  animation: comment-date-fade var(--date-duration) ease-out
+    calc(var(--delay) + var(--enter-duration)) both;
 }
 
 @keyframes comment-enter {
   from {
+    transform: translateX(-100%);
     opacity: 0;
-    transform: translateY(6px);
+    background-color: var(--enter-bg);
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+    background-color: white;
+  }
+}
+
+@keyframes comment-text-fade {
+  from {
+    opacity: 0;
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+  }
+}
+
+@keyframes comment-date-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

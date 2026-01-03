@@ -9,11 +9,11 @@
 @if (comments().length) {
   <mat-list>
     <h2 matSubheader>Commentairez sur ce post</h2>
-    @for (comment of comments(); track comment) {
-      <mat-list-item animate.enter="comment-enter" class="comment-item">
-        <span mat-line>{{ comment.createdDate | timeAgo }}</span>
+    @for (comment of comments(); track comment; let i = $index) {
+      <mat-list-item [style.--i]="i" animate.enter="comment-enter" class="comment-item">
+        <span class="comment-date" mat-line>{{ comment.createdDate | timeAgo }}</span>
         -
-        <span mat-line>{{ comment.comment | shorten }}</span>
+        <span class="comment-text" mat-line>{{ comment.comment | shorten }}</span>
       </mat-list-item>
     }
   </mat-list>
